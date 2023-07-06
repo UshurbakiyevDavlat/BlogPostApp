@@ -43,7 +43,7 @@
                                     <td>{{ $post['title'] }}</td>
                                     <td>{{ $post['body'] }}</td>
                                     <td>
-                                        <a href="{{ route('posts.edit', $post['id']) }}" class="btn btn-sm btn-primary">Редактировать</a>
+                                        <a href="{{ route('posts.edit', $post['id']) }}" class="btn btn-sm btn-primary mb-1">Редактировать</a>
                                         <form action="{{ route('posts.destroy', $post['id']) }}" method="POST" style="display: inline;">
                                             @csrf
                                             @method('DELETE')

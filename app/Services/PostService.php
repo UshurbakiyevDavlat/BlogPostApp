@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\Post;
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 
 class PostService
 {
@@ -19,7 +21,12 @@ class PostService
     {
         $posts = $this->service->getPosts();
 
-        foreach ($posts as $post) {
+        foreach ($posts as $key => $post) {
+            $existingPost = Post::withTrashed()->find($post['id']);
+            if ($existingPost && $existingPost->deleted_at !== null) {
+                $posts->forget($key);
+            }
+
             Post::updateOrCreate(
                 ['id' => $post['id']], // Update condition (e.g., based on the ID)
                 [
@@ -36,17 +43,27 @@ class PostService
         return $this->service->getPost($id);
     }
 
+    /**
+     * @throws Exception
+     */
     public function store(array $data): RedirectResponse
     {
-        if (Post::create($data)) {
-            return redirect()->back()->with(['msg' => 'Post created!']);
+        $dummy = $this->dummyAddPost($data);
+        unset($data['title'], $data['body']);
+
+        if ($dummy && Post::create($data)) {
+            return redirect()->route('posts.index')->with(['msg' => 'Post created!']);
         }
         return redirect()->back()->withErrors(['msg' => 'Post not created!']);
     }
 
     public function update(array $data, Post $post): RedirectResponse
     {
-        if ($post->update($data)) {
+        $dummy = $this->dummyUpdatePost($data);
+
+        unset($data['title'], $data['body']);
+
+        if ($dummy && $post->update($data)) {
             return redirect()->back()->with(['msg' => 'Post updated!']);
         }
         return redirect()->back()->withErrors(['msg' => 'Post not updated!']);
@@ -65,4 +82,33 @@ class PostService
         return $action->withErrors($message);
     }
 
+    private function dummyAddPost($data): string|RedirectResponse
+    {
+        $dummyData['title'] = $data['title'];
+        $dummyData['body'] = $data['body'];
+        $dummyData['userId'] = random_int(1, 100);
+
+        try {
+            $result = $this->service->addPost($dummyData);
+        } catch (Exception $e) {
+            Log::error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return redirect()->back()->withErrors(['msg' => 'Post not updated!']);
+        }
+
+        return $result;
+    }
+
+    private function dummyUpdatePost($data): string|RedirectResponse
+    {
+        $dummyData['title'] = $data['title'];
+        $dummyData['body'] = $data['body'];
+
+        try {
+            $result = $this->service->updatePost($dummyData);
+        } catch (Exception $e) {
+            Log::error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return redirect()->back()->withErrors(['msg' => 'Post not updated!']);
+        }
+        return $result;
+    }
 }

@@ -27,21 +27,22 @@
                             @method('PUT')
 
                             <div class="form-group">
-                                <label for="title">Title</label>
-                                <input disabled type="text" class="form-control" id="title" name="title" value="{{ $postDummy['title'] }}">
+                                <label for="title"><b>Title</b></label>
+                                <input required type="text" class="form-control" id="title" name="title" value="{{ $postDummy['title'] }}">
                             </div>
 
                             <div class="form-group">
-                                <label for="body">Body</label>
-                                <textarea disabled class="form-control" id="body" name="body" rows="3">{{ $postDummy['body'] }}</textarea>
+                                <label for="body"><b>Body</b></label>
+                                <textarea required class="form-control" id="body" name="body" rows="3">{{ $postDummy['body'] }}</textarea>
                             </div>
 
                             <div class="form-group">
-                                <label for="author_name">AuthorName</label>
-                                <textarea class="form-control" id="author_name" name="author_name" rows="3">{{ $post['author_name'] }}</textarea>
+                                <label for="author_name"><b>AuthorName</b></label>
+                                <textarea required class="form-control" id="author_name" name="author_name" rows="3">{{ $post['author_name'] }}</textarea>
                             </div>
 
                             <button type="submit" class="btn mt-4 btn-primary">Save</button>
+                            <a style="margin-left: 10px" href="{{route('posts.index')}}" class="btn mt-4 btn-primary">Back</a>
                         </form>
                     </div>
                 </div>
