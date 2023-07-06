@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Helpers\PaginationHelper;
 use App\Models\Post;
 use Illuminate\Http\Client\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Request;
 
 class DummyService
 {
@@ -46,13 +46,7 @@ class DummyService
             return $post;
         })->sortByDesc('id');
 
-        $perPage = 30;
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $pagedData = $posts->slice(($currentPage - 1) * $perPage, $perPage)->all();
-        $posts = new LengthAwarePaginator($pagedData, $posts->count(), $perPage, $currentPage);
-        $posts->withPath(Request::url());
-
-        return $posts;
+        return PaginationHelper::paginate($posts);
     }
 
     public function getPost(int $id)
