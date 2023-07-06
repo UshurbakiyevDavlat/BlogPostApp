@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Post;
 use Illuminate\Http\Client\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
@@ -35,8 +36,15 @@ class DummyService
 
             $post['author_name'] = $author ? $author['firstName'] . ' ' . $author['lastName'] : '';
 
+            Post::updateOrCreate(
+                ['id' => $post['id']], // Update condition (e.g., based on the ID)
+                [
+                    'author_name' => $post['author_name'],
+                ]
+            );
+
             return $post;
-        });
+        })->sortByDesc('id');
 
         $perPage = 30;
         $currentPage = LengthAwarePaginator::resolveCurrentPage();

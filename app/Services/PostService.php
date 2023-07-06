@@ -26,13 +26,6 @@ class PostService
             if ($existingPost && $existingPost->deleted_at !== null) {
                 $posts->forget($key);
             }
-
-            Post::updateOrCreate(
-                ['id' => $post['id']], // Update condition (e.g., based on the ID)
-                [
-                    'author_name' => $post['author_name'],
-                ]
-            );
         }
 
         return $posts;
