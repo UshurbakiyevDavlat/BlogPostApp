@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PostService
 {
@@ -14,7 +15,7 @@ class PostService
         $this->service = $service;
     }
 
-    public function index()
+    public function index(): LengthAwarePaginator
     {
         $posts = $this->service->getPosts();
 
@@ -28,6 +29,11 @@ class PostService
         }
 
         return $posts;
+    }
+
+    public function getPost(int $id)
+    {
+        return $this->service->getPost($id);
     }
 
     public function store(array $data): RedirectResponse

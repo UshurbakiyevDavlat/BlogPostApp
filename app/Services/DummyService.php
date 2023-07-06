@@ -12,7 +12,7 @@ class DummyService
     private Response $postConnection;
     private Response $usersConnection;
 
-    public function __construct()
+    public function connect(): void
     {
         $this->postConnection = Http::get('https://dummyjson.com/posts?limit=150');
         $this->usersConnection = Http::get('https://dummyjson.com/users');
@@ -20,6 +20,8 @@ class DummyService
 
     public function getPosts(): LengthAwarePaginator
     {
+        $this->connect();
+
         $users = $this->usersConnection->json()['users'];
         $posts = $this->postConnection->json()['posts'];
 
@@ -38,5 +40,14 @@ class DummyService
         $posts->withPath(Request::url());
 
         return $posts;
+    }
+
+    public function getPost(int $id)
+    {
+        $this->connect();
+
+        $posts = $this->postConnection->json()['posts'];
+
+        return collect($posts)->firstWhere('id', $id);
     }
 }

@@ -50,18 +50,18 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function edit(Post $post): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        return view('posts.edit');
+        $postDummy = $this->service->getPost($post->id);
+        return view('posts.edit',compact('post','postDummy'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, string $id): RedirectResponse
+    public function update(UpdateRequest $request, Post $post): RedirectResponse
     {
         $validated = $request->validated();
-        $post = Post::findOrFail($id);
 
         return $this->service->update($validated, $post);
     }
